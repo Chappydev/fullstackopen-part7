@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  Routes, Route, Link, useMatch
+  Routes, Route, Link, useMatch, useNavigate
 } from 'react-router-dom';
 
 const Menu = () => {
@@ -15,6 +15,25 @@ const Menu = () => {
     </div>
   )
 }
+
+const Notification = ({ notification }) => {
+  const styles = {
+    padding: 6,
+    borderStyle: 'solid',
+    borderColor: 'black',
+    borderWidth: 1
+  };
+
+  if (!notification) {
+    return <div></div>
+  }
+
+  return (
+    <div style={styles}>
+      {notification}
+    </div>
+  )
+};
 
 const AnecdoteList = ({ anecdotes }) => (
   <div>
@@ -65,15 +84,24 @@ const CreateNew = (props) => {
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
 
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    if (props.timeoutCode) {
+      clearTimeout(props.timeoutCode);
+    }
+    e.preventDefault();
     props.addNew({
       content,
       author,
       info,
       votes: 0
-    })
+    });
+    props.setNotification(`Added anecdote "${content}"`);
+    props.setTimeoutCode(setTimeout(() => {
+      props.setNotification('');
+    }, 5000));
+    navigate('/');
   }
 
   return (
@@ -118,6 +146,7 @@ const App = () => {
   ])
 
   const [notification, setNotification] = useState('')
+  const [timeoutCode, setTimeoutCode] = useState(undefined);
 
   const match = useMatch('/anecdotes/:id');
   const anecdote = match
@@ -147,10 +176,17 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      <Notification notification={notification} />
       <Routes>
         <Route path='/' element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route path='/about' element={<About />} />
-        <Route path='/create' element={<CreateNew addNew={addNew} />} />
+        <Route path='/create' element={<CreateNew 
+            addNew={addNew}
+            setNotification={setNotification} 
+            timeoutCode={timeoutCode}
+            setTimeoutCode={setTimeoutCode}
+          />} 
+        />
         <Route path='/anecdotes/:id' element={<Anecdote anecdote={anecdote} />} />
       </Routes>
       <Footer />
