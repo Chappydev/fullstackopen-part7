@@ -1,18 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import Blog from './components/Blog';
 import NewBlogForm from './components/NewBlogForm';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
+import { showError, showNotification } from './reducers/notificationReducer';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
 const App = () => {
+  const dispatch = useDispatch();
+
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [notificationMessage, setNotificationMessage] = useState('');
-  const [isError, setIsError] = useState(false);
 
   const onChangeMaker =
     (callback) =>
@@ -33,17 +35,9 @@ const App = () => {
       setUser(user);
       setUsername('');
       setPassword('');
-      setIsError(false);
-      setNotificationMessage(`Successfully logged in user ${user.name}`);
-      setTimeout(() => {
-        setNotificationMessage('');
-      }, 5000);
+      dispatch(showNotification(`Successfully logged in user ${user.name}`, 5));
     } catch (exception) {
-      setIsError(true);
-      setNotificationMessage('Wrong username or password');
-      setTimeout(() => {
-        setNotificationMessage('');
-      }, 5000);
+      dispatch(showError('Wrong username or password', 5));
       console.error('Wrong username or password');
     }
   };
@@ -53,11 +47,7 @@ const App = () => {
 
     window.localStorage.removeItem('loggedInUser');
     setUser(null);
-    setIsError(false);
-    setNotificationMessage('Successfully logged out');
-    setTimeout(() => {
-      setNotificationMessage('');
-    }, 5000);
+    dispatch(showNotification('Successfully logged out', 5));
   };
 
   const addBlog = async (blogObj) => {
@@ -66,21 +56,16 @@ const App = () => {
     try {
       const blog = await blogService.addBlog(blogObj);
       setBlogs(blogs.concat(blog));
-      setIsError(false);
-      setNotificationMessage(
-        `The new blog "${blog.title}" by ${
-          blog.author || 'author undefined'
-        } was added`
+      dispatch(
+        showNotification(
+          `The new blog "${blog.title}" by ${
+            blog.author || 'author undefined'
+          } was added`,
+          5
+        )
       );
-      setTimeout(() => {
-        setNotificationMessage('');
-      }, 5000);
     } catch (error) {
-      setIsError(true);
-      setNotificationMessage('Failed to add blog');
-      setTimeout(() => {
-        setNotificationMessage('');
-      }, 5000);
+      dispatch(showError('Failed to add blog', 5));
       console.error(error.message);
     }
   };
@@ -89,19 +74,14 @@ const App = () => {
     try {
       const updatedBlog = await blogService.updateBlog(blog);
       setBlogs(blogs.map((e) => (e.id === blog.id ? updatedBlog : e)));
-      setIsError(false);
-      setNotificationMessage(
-        `${updatedBlog.title} now has ${updatedBlog.likes} likes`
+      dispatch(
+        showNotification(
+          `${updatedBlog.title} now has ${updatedBlog.likes} likes`,
+          5
+        )
       );
-      setTimeout(() => {
-        setNotificationMessage('');
-      }, 5000);
     } catch (error) {
-      setIsError(true);
-      setNotificationMessage('Failed to update likes');
-      setTimeout(() => {
-        setNotificationMessage('');
-      }, 5000);
+      dispatch(showError('Failed to update likes', 5));
       console.error(error.message);
     }
   };
@@ -110,17 +90,9 @@ const App = () => {
     try {
       await blogService.deleteBlog(blog);
       setBlogs(blogs.filter((e) => e.id !== blog.id));
-      setIsError(false);
-      setNotificationMessage(`${blog.title} was successfully removed`);
-      setTimeout(() => {
-        setNotificationMessage('');
-      }, 5000);
+      dispatch(showNotification(`${blog.title} was successfully removed`, 5));
     } catch (error) {
-      setIsError(true);
-      setNotificationMessage('Failed to remove blog');
-      setTimeout(() => {
-        setNotificationMessage('');
-      }, 5000);
+      dispatch(showError('Failed to remove blog', 5));
       console.error(error.message);
     }
   };
@@ -131,11 +103,7 @@ const App = () => {
         const blogs = await blogService.getAll();
         setBlogs(blogs);
       } catch (error) {
-        setIsError(true);
-        setNotificationMessage('Failed to fetch blogs from the server');
-        setTimeout(() => {
-          setNotificationMessage('');
-        }, 5000);
+        dispatch(showError('Failed to fetch blogs from the server', 5));
         console.error('Failed to fetch blogs from the server');
       }
     };
@@ -156,7 +124,7 @@ const App = () => {
     return (
       <div>
         <h2>Please login to the app</h2>
-        <Notification isError={isError} message={notificationMessage} />
+        <Notification />
         <form onSubmit={handleLogin}>
           Username
           <input
@@ -184,7 +152,7 @@ const App = () => {
   return (
     <div>
       <h2>Blogs</h2>
-      <Notification isError={isError} message={notificationMessage} />
+      <Notification />
       <p>{user.name} is logged in</p>
       <button onClick={handleLogout}>Logout</button>
       {blogs
