@@ -14,7 +14,10 @@ const App = () => {
   const [notificationMessage, setNotificationMessage] = useState('');
   const [isError, setIsError] = useState(false);
 
-  const onChangeMaker = (callback) => ({ target }) => callback(target.value);
+  const onChangeMaker =
+    (callback) =>
+    ({ target }) =>
+      callback(target.value);
   const newBlogFormRef = useRef();
 
   const handleLogin = async (e) => {
@@ -22,7 +25,8 @@ const App = () => {
 
     try {
       const user = await loginService.login({
-        username, password
+        username,
+        password
       });
       blogService.setToken(user.token);
       window.localStorage.setItem('loggedInUser', JSON.stringify(user));
@@ -63,7 +67,11 @@ const App = () => {
       const blog = await blogService.addBlog(blogObj);
       setBlogs(blogs.concat(blog));
       setIsError(false);
-      setNotificationMessage(`The new blog "${blog.title}" by ${blog.author || 'author undefined'} was added`);
+      setNotificationMessage(
+        `The new blog "${blog.title}" by ${
+          blog.author || 'author undefined'
+        } was added`
+      );
       setTimeout(() => {
         setNotificationMessage('');
       }, 5000);
@@ -80,9 +88,11 @@ const App = () => {
   const addLike = async (blog) => {
     try {
       const updatedBlog = await blogService.updateBlog(blog);
-      setBlogs(blogs.map(e => e.id === blog.id ? updatedBlog : e));
+      setBlogs(blogs.map((e) => (e.id === blog.id ? updatedBlog : e)));
       setIsError(false);
-      setNotificationMessage(`${updatedBlog.title} now has ${updatedBlog.likes} likes`);
+      setNotificationMessage(
+        `${updatedBlog.title} now has ${updatedBlog.likes} likes`
+      );
       setTimeout(() => {
         setNotificationMessage('');
       }, 5000);
@@ -99,7 +109,7 @@ const App = () => {
   const deleteBlog = async (blog) => {
     try {
       await blogService.deleteBlog(blog);
-      setBlogs(blogs.filter(e => e.id !== blog.id));
+      setBlogs(blogs.filter((e) => e.id !== blog.id));
       setIsError(false);
       setNotificationMessage(`${blog.title} was successfully removed`);
       setTimeout(() => {
@@ -163,7 +173,9 @@ const App = () => {
             name="password"
             onChange={({ target }) => setPassword(target.value)}
           />
-          <button id="login-button" type="submit">Login</button>
+          <button id="login-button" type="submit">
+            Login
+          </button>
         </form>
       </div>
     );
@@ -175,14 +187,19 @@ const App = () => {
       <Notification isError={isError} message={notificationMessage} />
       <p>{user.name} is logged in</p>
       <button onClick={handleLogout}>Logout</button>
-      {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} user={user} blog={blog} deleteBlog={deleteBlog} addLike={addLike} />
-      )}
+      {blogs
+        .sort((a, b) => b.likes - a.likes)
+        .map((blog) => (
+          <Blog
+            key={blog.id}
+            user={user}
+            blog={blog}
+            deleteBlog={deleteBlog}
+            addLike={addLike}
+          />
+        ))}
       <Togglable buttonLabel="New Note" ref={newBlogFormRef}>
-        <NewBlogForm
-          addBlog={addBlog}
-          onChangeMaker={onChangeMaker}
-        />
+        <NewBlogForm addBlog={addBlog} onChangeMaker={onChangeMaker} />
       </Togglable>
     </div>
   );
