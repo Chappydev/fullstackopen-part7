@@ -1,14 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Blog from './components/Blog';
-import NewBlogForm from './components/NewBlogForm';
+import { Route, Routes } from 'react-router-dom';
+import Home from './components/Home';
 import Notification from './components/Notification';
-import Togglable from './components/Togglable';
-import {
-  createBlog,
-  initializeBlogs,
-  removeBlog
-} from './reducers/blogReducer';
+import { initializeBlogs } from './reducers/blogReducer';
 import { showError, showNotification } from './reducers/notificationReducer';
 import {
   loginAs,
@@ -19,16 +14,9 @@ import blogService from './services/blogs';
 
 const App = () => {
   const dispatch = useDispatch();
-
-  const { blogs, user } = useSelector((state) => state);
+  const user = useSelector((state) => state.user);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
-  const onChangeMaker =
-    (callback) =>
-    ({ target }) =>
-      callback(target.value);
-  const newBlogFormRef = useRef();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -49,35 +37,6 @@ const App = () => {
 
     dispatch(logoutCurrentUser());
     dispatch(showNotification('Successfully logged out', 5));
-  };
-
-  const addBlog = async (blogObj) => {
-    newBlogFormRef.current.toggleVisibility();
-
-    try {
-      dispatch(createBlog(blogObj));
-      dispatch(
-        showNotification(
-          `The new blog "${blogObj.title}" by ${
-            blogObj.author || 'author undefined'
-          } was added`,
-          5
-        )
-      );
-    } catch (error) {
-      dispatch(showError('Failed to add blog', 5));
-      console.error(error.message);
-    }
-  };
-
-  const deleteBlog = async (blog) => {
-    try {
-      dispatch(removeBlog(blog));
-      dispatch(showNotification(`${blog.title} was successfully removed`, 5));
-    } catch (error) {
-      dispatch(showError('Failed to remove blog', 5));
-      console.error(error.message);
-    }
   };
 
   useEffect(() => {
@@ -130,18 +89,14 @@ const App = () => {
 
   return (
     <div>
-      <h2>Blogs</h2>
+      <h1>Blogs</h1>
       <Notification />
       <p>{user.name} is logged in</p>
       <button onClick={handleLogout}>Logout</button>
-      {[...blogs]
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog key={blog.id} user={user} blog={blog} deleteBlog={deleteBlog} />
-        ))}
-      <Togglable buttonLabel="New Note" ref={newBlogFormRef}>
-        <NewBlogForm addBlog={addBlog} onChangeMaker={onChangeMaker} />
-      </Togglable>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
     </div>
   );
 };
