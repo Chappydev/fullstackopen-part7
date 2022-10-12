@@ -71,26 +71,10 @@ const App = () => {
     }
   };
 
-  const addLike = async (blog) => {
-    try {
-      const updatedBlog = await blogService.updateBlog(blog);
-      setOldBlogs(oldBlogs.map((e) => (e.id === blog.id ? updatedBlog : e)));
-      dispatch(
-        showNotification(
-          `${updatedBlog.title} now has ${updatedBlog.likes} likes`,
-          5
-        )
-      );
-    } catch (error) {
-      dispatch(showError('Failed to update likes', 5));
-      console.error(error.message);
-    }
-  };
-
   const deleteBlog = async (blog) => {
     try {
       await blogService.deleteBlog(blog);
-      setOldBlogs(blogs.filter((e) => e.id !== blog.id));
+      setOldBlogs(oldBlogs.filter((e) => e.id !== blog.id));
       dispatch(showNotification(`${blog.title} was successfully removed`, 5));
     } catch (error) {
       dispatch(showError('Failed to remove blog', 5));
@@ -155,13 +139,7 @@ const App = () => {
       {[...blogs]
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
-          <Blog
-            key={blog.id}
-            user={user}
-            blog={blog}
-            deleteBlog={deleteBlog}
-            addLike={addLike}
-          />
+          <Blog key={blog.id} user={user} blog={blog} deleteBlog={deleteBlog} />
         ))}
       <Togglable buttonLabel="New Note" ref={newBlogFormRef}>
         <NewBlogForm addBlog={addBlog} onChangeMaker={onChangeMaker} />

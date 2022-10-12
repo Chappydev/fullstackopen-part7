@@ -1,6 +1,10 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { incrementLikes } from '../reducers/blogReducer';
+import { showError, showNotification } from '../reducers/notificationReducer';
 
-const Blog = ({ blog, addLike, deleteBlog, user }) => {
+const Blog = ({ blog, deleteBlog, user }) => {
+  const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
 
   const toggleVisibility = () => {
@@ -10,12 +14,15 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
   const handleLike = (e) => {
     e.preventDefault();
 
-    const updatedBlog = {
-      ...blog,
-      likes: blog.likes + 1
-    };
-
-    addLike(updatedBlog);
+    try {
+      dispatch(incrementLikes(blog));
+      dispatch(
+        showNotification(`${blog.title} now has ${blog.likes + 1} likes`, 5)
+      );
+    } catch (error) {
+      dispatch(showError('Failed to update likes', 5));
+      console.error(error.message);
+    }
   };
 
   const handleRemove = (e) => {
@@ -36,9 +43,13 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
           <button onClick={toggleVisibility}>Hide</button>
         </p>
         <p>{blog.url}</p>
-        <p>likes: {blog.likes} <button onClick={handleLike}>like</button></p>
+        <p>
+          likes: {blog.likes} <button onClick={handleLike}>like</button>
+        </p>
         <p>Added by {blog.user.name}</p>
-        { user.username === blog.user.username && <button onClick={handleRemove}>Remove</button>}
+        {user.username === blog.user.username && (
+          <button onClick={handleRemove}>Remove</button>
+        )}
       </div>
     );
   }
