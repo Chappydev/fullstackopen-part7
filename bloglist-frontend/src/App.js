@@ -10,16 +10,19 @@ import {
   removeBlog
 } from './reducers/blogReducer';
 import { showError, showNotification } from './reducers/notificationReducer';
+import {
+  loginAs,
+  loginWithCredentials,
+  logoutCurrentUser
+} from './reducers/userReducer';
 import blogService from './services/blogs';
-import loginService from './services/login';
 
 const App = () => {
   const dispatch = useDispatch();
 
-  const blogs = useSelector((state) => state.blogs);
+  const { blogs, user } = useSelector((state) => state);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
 
   const onChangeMaker =
     (callback) =>
@@ -31,16 +34,10 @@ const App = () => {
     e.preventDefault();
 
     try {
-      const user = await loginService.login({
-        username,
-        password
-      });
-      blogService.setToken(user.token);
-      window.localStorage.setItem('loggedInUser', JSON.stringify(user));
-      setUser(user);
+      dispatch(loginWithCredentials(username, password));
       setUsername('');
       setPassword('');
-      dispatch(showNotification(`Successfully logged in user ${user.name}`, 5));
+      dispatch(showNotification('Successfully logged in', 5));
     } catch (exception) {
       dispatch(showError('Wrong username or password', 5));
       console.error('Wrong username or password');
@@ -50,8 +47,7 @@ const App = () => {
   const handleLogout = (e) => {
     e.preventDefault();
 
-    window.localStorage.removeItem('loggedInUser');
-    setUser(null);
+    dispatch(logoutCurrentUser());
     dispatch(showNotification('Successfully logged out', 5));
   };
 
@@ -98,7 +94,7 @@ const App = () => {
 
     if (loggedInUserJSON) {
       const loggedInUser = JSON.parse(loggedInUserJSON);
-      setUser(loggedInUser);
+      dispatch(loginAs(loggedInUser));
       blogService.setToken(loggedInUser.token);
     }
   }, []);
