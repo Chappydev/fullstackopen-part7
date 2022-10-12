@@ -4,7 +4,11 @@ import Blog from './components/Blog';
 import NewBlogForm from './components/NewBlogForm';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
-import { createBlog, initializeBlogs } from './reducers/blogReducer';
+import {
+  createBlog,
+  initializeBlogs,
+  removeBlog
+} from './reducers/blogReducer';
 import { showError, showNotification } from './reducers/notificationReducer';
 import blogService from './services/blogs';
 import loginService from './services/login';
@@ -13,7 +17,6 @@ const App = () => {
   const dispatch = useDispatch();
 
   const blogs = useSelector((state) => state.blogs);
-  const [oldBlogs, setOldBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
@@ -73,8 +76,7 @@ const App = () => {
 
   const deleteBlog = async (blog) => {
     try {
-      await blogService.deleteBlog(blog);
-      setOldBlogs(oldBlogs.filter((e) => e.id !== blog.id));
+      dispatch(removeBlog(blog));
       dispatch(showNotification(`${blog.title} was successfully removed`, 5));
     } catch (error) {
       dispatch(showError('Failed to remove blog', 5));
