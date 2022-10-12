@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes, useMatch } from 'react-router-dom';
+import BlogDetails from './components/BlogDetails';
 import Home from './components/Home';
 import Notification from './components/Notification';
 import User from './components/User';
@@ -17,13 +18,18 @@ import blogService from './services/blogs';
 
 const App = () => {
   const dispatch = useDispatch();
-  const { user, users } = useSelector((state) => state);
+  const { user, users, blogs } = useSelector((state) => state);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const userMatch = useMatch('/users/:id');
   const userToDisplay = userMatch
     ? users.find((u) => u.id === userMatch.params.id)
+    : null;
+
+  const blogMatch = useMatch('/blogs/:id');
+  const blogToDisplay = blogMatch
+    ? blogs.find((b) => b.id === blogMatch.params.id)
     : null;
 
   const handleLogin = async (e) => {
@@ -117,6 +123,10 @@ const App = () => {
         <Route
           path="/users/:id"
           element={<User userToDisplay={userToDisplay} />}
+        />
+        <Route
+          path="/blogs/:id"
+          element={<BlogDetails blogToDisplay={blogToDisplay} />}
         />
       </Routes>
     </div>

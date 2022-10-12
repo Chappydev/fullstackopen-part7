@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createBlog, removeBlog } from '../reducers/blogReducer';
+import { createBlog } from '../reducers/blogReducer';
 import { showError, showNotification } from '../reducers/notificationReducer';
 import Blog from './Blog';
 import NewBlogForm from './NewBlogForm';
@@ -35,22 +35,12 @@ const Home = () => {
     }
   };
 
-  const deleteBlog = async (blog) => {
-    try {
-      dispatch(removeBlog(blog));
-      dispatch(showNotification(`${blog.title} was successfully removed`, 5));
-    } catch (error) {
-      dispatch(showError('Failed to remove blog', 5));
-      console.error(error.message);
-    }
-  };
-
   return (
     <div>
       {[...blogs]
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
-          <Blog key={blog.id} blog={blog} deleteBlog={deleteBlog} />
+          <Blog key={blog.id} blog={blog} />
         ))}
       <Togglable buttonLabel="New Note" ref={newBlogFormRef}>
         <NewBlogForm addBlog={addBlog} onChangeMaker={onChangeMaker} />
