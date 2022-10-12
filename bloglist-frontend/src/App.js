@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useMatch } from 'react-router-dom';
 import Home from './components/Home';
 import Notification from './components/Notification';
+import User from './components/User';
 import UsersList from './components/UsersList';
 import { initializeBlogs } from './reducers/blogReducer';
 import { showError, showNotification } from './reducers/notificationReducer';
@@ -11,13 +12,19 @@ import {
   loginWithCredentials,
   logoutCurrentUser
 } from './reducers/userReducer';
+import { initializeUsers } from './reducers/usersReducer';
 import blogService from './services/blogs';
 
 const App = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
+  const { user, users } = useSelector((state) => state);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const userMatch = useMatch('/users/:id');
+  const userToDisplay = userMatch
+    ? users.find((u) => u.id === userMatch.params.id)
+    : null;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -56,6 +63,15 @@ const App = () => {
       const loggedInUser = JSON.parse(loggedInUserJSON);
       dispatch(loginAs(loggedInUser));
       blogService.setToken(loggedInUser.token);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      dispatch(initializeUsers());
+    } catch (error) {
+      dispatch(showError('Failed to get user data'));
+      console.error(error);
     }
   }, []);
 
@@ -98,6 +114,10 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<UsersList />} />
+        <Route
+          path="/users/:id"
+          element={<User userToDisplay={userToDisplay} />}
+        />
       </Routes>
     </div>
   );

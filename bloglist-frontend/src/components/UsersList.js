@@ -1,20 +1,8 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setError } from '../reducers/notificationReducer';
-import { initializeUsers } from '../reducers/usersReducer';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 const UsersList = () => {
-  const dispatch = useDispatch();
   const users = useSelector((state) => state.users);
-
-  useEffect(() => {
-    try {
-      dispatch(initializeUsers());
-    } catch (error) {
-      dispatch(setError('Failed to get user data'));
-      console.error(error);
-    }
-  }, []);
 
   return (
     <div>
@@ -30,7 +18,9 @@ const UsersList = () => {
           {users.map((u) => {
             return (
               <tr key={u.id}>
-                <td>{u.name}</td>
+                <td>
+                  <Link to={`/users/${u.id}`}>{u.name}</Link>
+                </td>
                 <td>{u.blogs.length}</td>
               </tr>
             );
