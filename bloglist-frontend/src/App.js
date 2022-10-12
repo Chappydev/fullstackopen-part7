@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import Notification from './components/Notification';
+import UsersList from './components/UsersList';
 import { initializeBlogs } from './reducers/blogReducer';
 import { showError, showNotification } from './reducers/notificationReducer';
 import {
@@ -96,6 +97,7 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/users" element={<UsersList />} />
       </Routes>
     </div>
   );
