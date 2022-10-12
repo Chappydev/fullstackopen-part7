@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { incrementLikes, removeBlog } from '../reducers/blogReducer';
 import { showError, showNotification } from '../reducers/notificationReducer';
+import Comments from './Comments';
 
 const BlogDetails = ({ blogToDisplay }) => {
   const dispatch = useDispatch();
@@ -50,7 +51,9 @@ const BlogDetails = ({ blogToDisplay }) => {
 
   return (
     <div>
-      <h2>{blogToDisplay.title}</h2>
+      <h2>
+        &quot;{blogToDisplay.title}&quot; by {blogToDisplay.author}
+      </h2>
       <p>
         <a href={blogToDisplay.url} target="_blank" rel="noreferrer">
           {blogToDisplay.url}
@@ -64,6 +67,7 @@ const BlogDetails = ({ blogToDisplay }) => {
       {user.username === blogToDisplay.user.username && (
         <button onClick={handleRemove}>Remove</button>
       )}
+      <Comments blog={blogToDisplay} />
     </div>
   );
 };

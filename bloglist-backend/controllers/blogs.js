@@ -27,7 +27,8 @@ blogsRouter.post('/', async (request, response) => {
     author: body.author,
     url: body.url,
     likes: body.likes || 0,
-    user: request.user._id
+    user: request.user._id,
+    comments: []
   });
 
   const savedBlog = await blog.save();
@@ -69,13 +70,34 @@ blogsRouter.put('/:id', async (request, response) => {
     author: body.author,
     url: body.url,
     likes: body.likes,
-    user: body.user.id
+    user: body.user.id,
+    comments: body.comments
   };
 
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
     new: true
   }).populate('user', { username: 1, name: 1 });
   response.json(updatedBlog);
+});
+
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const newComment = request.body.comment;
+
+  if (!newComment) {
+    return response.status(400).json({
+      error: 'Must include a non-empty comment'
+    });
+  }
+
+  const blog = await Blog.findById(request.params.id);
+  blog.comments = blog.comments.concat(newComment);
+  const savedBlog = await blog.save();
+  const populatedBlog = await Blog.findById(savedBlog._id).populate('user', {
+    username: 1,
+    name: 1
+  });
+
+  response.status(201).json(populatedBlog);
 });
 
 module.exports = blogsRouter;
