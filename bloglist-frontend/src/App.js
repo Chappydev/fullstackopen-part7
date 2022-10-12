@@ -3,16 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes, useMatch } from 'react-router-dom';
 import BlogDetails from './components/BlogDetails';
 import Home from './components/Home';
+import Navbar from './components/Navbar';
 import Notification from './components/Notification';
 import User from './components/User';
 import UsersList from './components/UsersList';
 import { initializeBlogs } from './reducers/blogReducer';
 import { showError, showNotification } from './reducers/notificationReducer';
-import {
-  loginAs,
-  loginWithCredentials,
-  logoutCurrentUser
-} from './reducers/userReducer';
+import { loginAs, loginWithCredentials } from './reducers/userReducer';
 import { initializeUsers } from './reducers/usersReducer';
 import blogService from './services/blogs';
 
@@ -44,13 +41,6 @@ const App = () => {
       dispatch(showError('Wrong username or password', 5));
       console.error('Wrong username or password');
     }
-  };
-
-  const handleLogout = (e) => {
-    e.preventDefault();
-
-    dispatch(logoutCurrentUser());
-    dispatch(showNotification('Successfully logged out', 5));
   };
 
   useEffect(() => {
@@ -112,10 +102,9 @@ const App = () => {
 
   return (
     <div>
-      <h1>Blogs</h1>
+      <Navbar />
+      <h1>Blogs App</h1>
       <Notification />
-      <p>{user.name} is logged in</p>
-      <button onClick={handleLogout}>Logout</button>
 
       <Routes>
         <Route path="/" element={<Home />} />
