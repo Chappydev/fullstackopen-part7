@@ -4,14 +4,11 @@ const Comments = ({ blog }) => {
   }
 
   return (
-    <div>
-      <h3>Comments</h3>
-      <ul>
-        {blog.comments.map((comment, index) => {
-          return <li key={index}>{comment}</li>;
-        })}
-      </ul>
-    </div>
+    <ul>
+      {blog.comments.map((comment, index) => {
+        return <li key={index}>{comment}</li>;
+      })}
+    </ul>
   );
 };
 

@@ -1,6 +1,11 @@
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { incrementLikes, removeBlog } from '../reducers/blogReducer';
+import {
+  addComment,
+  incrementLikes,
+  removeBlog
+} from '../reducers/blogReducer';
 import { showError, showNotification } from '../reducers/notificationReducer';
 import Comments from './Comments';
 
@@ -8,6 +13,7 @@ const BlogDetails = ({ blogToDisplay }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const [comment, setComment] = useState('');
 
   const handleLike = (e) => {
     e.preventDefault();
@@ -45,6 +51,19 @@ const BlogDetails = ({ blogToDisplay }) => {
     }
   };
 
+  const handleComment = (e) => {
+    e.preventDefault();
+
+    try {
+      dispatch(addComment(blogToDisplay, comment));
+      setComment('');
+      dispatch(showNotification('Comment added!'));
+    } catch (error) {
+      dispatch(showError('Failed to add comment'));
+      console.error(error);
+    }
+  };
+
   if (!blogToDisplay) {
     return null;
   }
@@ -67,6 +86,15 @@ const BlogDetails = ({ blogToDisplay }) => {
       {user.username === blogToDisplay.user.username && (
         <button onClick={handleRemove}>Remove</button>
       )}
+      <h3>Comments</h3>
+      <form onSubmit={handleComment}>
+        <input
+          type="text"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+        />
+        <button type="submit">Add Comment</button>
+      </form>
       <Comments blog={blogToDisplay} />
     </div>
   );
