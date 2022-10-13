@@ -1,3 +1,4 @@
+import { Button, Container, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes, useMatch } from 'react-router-dom';
@@ -71,37 +72,54 @@ const App = () => {
     }
   }, []);
 
+  const divSpacing = {
+    marginTop: 8
+  };
+
   if (user === null) {
     return (
-      <div>
+      <Container>
         <h2>Please login to the app</h2>
         <Notification />
         <form onSubmit={handleLogin}>
-          Username
-          <input
-            id="username"
-            type="text"
-            value={username}
-            name="username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-          Password
-          <input
-            id="password"
-            type="text"
-            name="password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-          <button id="login-button" type="submit">
-            Login
-          </button>
+          <div style={divSpacing}>
+            <TextField
+              id="username"
+              label="username"
+              value={username}
+              name="username"
+              autoComplete="username"
+              onChange={({ target }) => setUsername(target.value)}
+            />
+          </div>
+          <div style={divSpacing}>
+            <TextField
+              id="password"
+              label="password"
+              value={password}
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              onChange={({ target }) => setPassword(target.value)}
+            />
+          </div>
+          <div style={divSpacing}>
+            <Button
+              id="login-button"
+              variant="contained"
+              color="primary"
+              type="submit"
+            >
+              Login
+            </Button>
+          </div>
         </form>
-      </div>
+      </Container>
     );
   }
 
   return (
-    <div>
+    <Container>
       <Navbar />
       <h1>Blogs App</h1>
       <Notification />
@@ -118,7 +136,7 @@ const App = () => {
           element={<BlogDetails blogToDisplay={blogToDisplay} />}
         />
       </Routes>
-    </div>
+    </Container>
   );
 };
 

@@ -1,3 +1,4 @@
+import { Button, Card, CardContent, TextField } from '@mui/material';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -64,36 +65,53 @@ const BlogDetails = ({ blogToDisplay }) => {
     }
   };
 
+  const divSpacing = {
+    marginTop: 8
+  };
+
   if (!blogToDisplay) {
     return null;
   }
 
   return (
     <div>
-      <h2>
-        &quot;{blogToDisplay.title}&quot; by {blogToDisplay.author}
-      </h2>
-      <p>
-        <a href={blogToDisplay.url} target="_blank" rel="noreferrer">
-          {blogToDisplay.url}
-        </a>
-      </p>
-      <p>
-        {blogToDisplay.likes} likes
-        <button onClick={handleLike}>like</button>
-      </p>
-      <p>Added by {blogToDisplay.user.name}</p>
-      {user.username === blogToDisplay.user.username && (
-        <button onClick={handleRemove}>Remove</button>
-      )}
+      <Card raised={true}>
+        <CardContent>
+          <h2>
+            &quot;{blogToDisplay.title}&quot; by {blogToDisplay.author}
+          </h2>
+          <p>
+            <a href={blogToDisplay.url} target="_blank" rel="noreferrer">
+              {blogToDisplay.url}
+            </a>
+          </p>
+          <p>
+            {blogToDisplay.likes} likes
+            <Button color="secondary" onClick={handleLike}>
+              like
+            </Button>
+          </p>
+          <p>Added by {blogToDisplay.user.name}</p>
+          {user.username === blogToDisplay.user.username && (
+            <Button variant="outlined" color="error" onClick={handleRemove}>
+              Remove
+            </Button>
+          )}
+        </CardContent>
+      </Card>
       <h3>Comments</h3>
       <form onSubmit={handleComment}>
-        <input
-          type="text"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        <button type="submit">Add Comment</button>
+        <div style={divSpacing}>
+          <TextField
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+        </div>
+        <div style={divSpacing}>
+          <Button variant="contained" color="primary" type="submit">
+            Add Comment
+          </Button>
+        </div>
       </form>
       <Comments blog={blogToDisplay} />
     </div>

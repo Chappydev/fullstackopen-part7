@@ -1,3 +1,4 @@
+import { Alert } from '@mui/material';
 import { useSelector } from 'react-redux';
 
 const Notification = () => {
@@ -8,9 +9,9 @@ const Notification = () => {
   }
 
   if (notification.isError) {
-    return <div className="error">{notification.message}</div>;
+    return <Alert severity="error">{notification.message}</Alert>;
   }
-  return <div className="success">{notification.message}</div>;
+  return <Alert severity="success">{notification.message}</Alert>;
 };
 
 export default Notification;

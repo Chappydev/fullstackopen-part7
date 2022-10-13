@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { Button, TextField } from '@mui/material';
 
 const NewBlogForm = ({ addBlog, onChangeMaker }) => {
   const [title, setTitle] = useState('');
@@ -20,37 +21,43 @@ const NewBlogForm = ({ addBlog, onChangeMaker }) => {
     setUrl('');
   };
 
+  const divSpacing = {
+    marginTop: 8
+  };
+
   return (
     <div>
       <h2>Create New Blog</h2>
       <form onSubmit={handleCreateBlog}>
-        title:
-        <input
-          className="title-input"
-          type="text"
-          value={title}
-          name="title"
-          onChange={onChangeMaker(setTitle)}
-        />
-        author:
-        <input
-          className="author-input"
-          type="text"
-          value={author}
-          name="author"
-          onChange={onChangeMaker(setAuthor)}
-        />
-        url:
-        <input
-          className="url-input"
-          type="text"
-          value={url}
-          name="url"
-          onChange={onChangeMaker(setUrl)}
-        />
-        <button id="submit-note" type="submit">
-          Create
-        </button>
+        <div style={divSpacing}>
+          <TextField
+            label="Title"
+            value={title}
+            name="title"
+            onChange={onChangeMaker(setTitle)}
+          />
+        </div>
+        <div style={divSpacing}>
+          <TextField
+            label="Author"
+            value={author}
+            name="author"
+            onChange={onChangeMaker(setAuthor)}
+          />
+        </div>
+        <div style={divSpacing}>
+          <TextField
+            label="Url"
+            value={url}
+            name="url"
+            onChange={onChangeMaker(setUrl)}
+          />
+        </div>
+        <div style={divSpacing}>
+          <Button id="submit-note" variant="contained" type="submit">
+            Create
+          </Button>
+        </div>
       </form>
     </div>
   );

@@ -1,14 +1,20 @@
+import { List, ListItem, ListItemText } from '@mui/material';
+
 const Comments = ({ blog }) => {
   if (blog.comments.length === 0 || !blog.comments) {
     return <div>This blog currently has no comments</div>;
   }
 
   return (
-    <ul>
+    <List>
       {blog.comments.map((comment, index) => {
-        return <li key={index}>{comment}</li>;
+        return (
+          <ListItem key={index}>
+            <ListItemText secondary={comment} />
+          </ListItem>
+        );
       })}
-    </ul>
+    </List>
   );
 };
 

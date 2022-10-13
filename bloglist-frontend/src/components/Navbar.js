@@ -1,3 +1,4 @@
+import { AppBar, Button, Toolbar } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { showNotification } from '../reducers/notificationReducer';
@@ -14,13 +15,22 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar">
-      <Link to="/">Blogs</Link>
-      <Link to="/users">Users</Link>
-      <p>
-        {user.name} is logged in <button onClick={handleLogout}>Logout</button>
-      </p>
-    </nav>
+    <AppBar position="static">
+      <Toolbar>
+        <Button color="inherit" component={Link} to="/">
+          Blogs
+        </Button>
+        <Button color="inherit" component={Link} to="/users">
+          Users
+        </Button>
+        <div style={{ marginLeft: 'auto ' }}>
+          {user.name} is logged in{' '}
+          <Button color="inherit" variant="outlined" onClick={handleLogout}>
+            Logout
+          </Button>
+        </div>
+      </Toolbar>
+    </AppBar>
   );
 };
 
